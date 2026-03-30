@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Measurement Quest 🗺️</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #0ea5e9;
+    --grass: #22c55e;
+    --sun: #fbbf24;
+    --coral: #f97316;
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --bg: #fef9f0;
+    --card: #ffffff;
+    --dark: #1e293b;
+    --mm-color: #ec4899;
+    --cm-color: #f97316;
+    --m-color: #0ea5e9;
+    --km-color: #a855f7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── FLOATING SHAPES BG ── */
+  .bg-shapes {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .shape {
+    position: absolute; border-radius: 50%; opacity: 0.07;
+    animation: float 8s ease-in-out infinite;
+  }
+  .shape:nth-child(1){width:180px;height:180px;background:#f97316;top:5%;left:10%;animation-delay:0s}
+  .shape:nth-child(2){width:120px;height:120px;background:#0ea5e9;top:20%;right:8%;animation-delay:2s}
+  .shape:nth-child(3){width:220px;height:220px;background:#a855f7;bottom:10%;left:5%;animation-delay:4s}
+  .shape:nth-child(4){width:90px;height:90px;background:#22c55e;bottom:25%;right:12%;animation-delay:1s}
+  .shape:nth-child(5){width:150px;height:150px;background:#ec4899;top:55%;left:45%;animation-delay:3s}
+
+  @keyframes float {
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-30px) rotate(10deg)}
+  }
+
+  /* ── HOME SCREEN ── */
+  #home {
+    align-items: center; justify-content: center;
+    background: linear-gradient(160deg,#dbeafe 0%,#fef9f0 50%,#fce7f3 100%);
+    padding: 20px; text-align: center;
+  }
+
+  .logo-wrap { position: relative; z-index: 1; }
+
+  .game-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    color: var(--dark);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .game-title span { color: var(--coral); }
+
+  .tagline {
+    font-size: 1.15rem; font-weight: 700; color: #64748b;
+    margin-bottom: 32px;
+  }
+
+  .hero-mascot {
+    font-size: 6rem; margin: 0 auto 24px;
+    animation: mascot-bounce 2s ease-in-out infinite;
+    display: block;
+  }
+  @keyframes mascot-bounce {
+    0%,100%{transform:translateY(0) rotate(-3deg)}
+    50%{transform:translateY(-18px) rotate(3deg)}
+  }
+
+  .unit-pills {
+    display: flex; gap: 10px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 36px;
+  }
+  .pill {
+    padding: 8px 18px; border-radius: 999px;
+    font-family: 'Fredoka One', cursive; font-size: 1.05rem;
+    color: #fff; animation: pill-pop 0.6s ease both;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .pill.mm { background: var(--mm-color); animation-delay:0.1s }
+  .pill.cm { background: var(--cm-color); animation-delay:0.2s }
+  .pill.m  { background: var(--m-color);  animation-delay:0.3s }
+  .pill.km { background: var(--km-color); animation-delay:0.4s }
+  @keyframes pill-pop {
+    0%{opacity:0;transform:scale(0.5)}100%{opacity:1;transform:scale(1)}
+  }
+
+  .start-btn {
+    font-family: 'Fredoka One', cursive; font-size: 1.5rem;
+    padding: 16px 48px; border: none; border-radius: 999px;
+    background: linear-gradient(135deg,#f97316,#ec4899);
+    color: #fff; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(249,115,22,0.45);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .start-btn:hover { transform: scale(1.06); box-shadow: 0 12px 32px rgba(249,115,22,0.55); }
+
+  /* ── MAP SCREEN ── */
+  #map {
+    background: linear-gradient(180deg,#bae6fd 0%,#e0f2fe 30%,#dcfce7 70%,#bbf7d0 100%);
+    padding: 20px; align-items: center;
+  }
+
+  .map-header {
+    text-align: center; z-index: 1; margin-bottom: 24px;
+  }
+  .map-header h2 {
+    font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--dark);
+  }
+  .map-header p { font-size: 0.95rem; color: #475569; font-weight: 600; }
+
+  .stars-display {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border-radius: 999px; padding: 6px 16px;
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 8px;
+    color: var(--dark);
+  }
+
+  .world-grid {
+    display: grid; grid-template-columns: repeat(2,1fr);
+    gap: 16px; max-width: 480px; width: 100%; z-index: 1;
+    padding: 0 4px;
+  }
+
+  .world-card {
+    background: #fff; border-radius: 20px;
+    padding: 20px 16px; text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .world-card::before {
+    content:''; position:absolute; inset:0;
+    opacity:0.07; border-radius:20px;
+  }
+  .world-card.mm::before { background: var(--mm-color); }
+  .world-card.cm::before { background: var(--cm-color); }
+  .world-card.m::before  { background: var(--m-color); }
+  .world-card.km::before { background: var(--km-color); }
+
+  .world-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+  .world-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .world-card.locked:hover { transform: none; box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+  .world-emoji { font-size: 2.8rem; margin-bottom: 8px; display: block; }
+  .world-name {
+    font-family: 'Fredoka One', cursive; font-size: 1.25rem;
+    color: var(--dark); margin-bottom: 2px;
+  }
+  .world-desc { font-size: 0.78rem; color: #64748b; font-weight: 600; }
+  .world-stars { font-size: 0.85rem; margin-top: 6px; }
+
+  .boss-card {
+    grid-column: 1/-1;
+    background: linear-gradient(135deg,#1e293b,#334155);
+    color: #fff; cursor: pointer;
+  }
+  .boss-card::before { background: #fff; opacity: 0.05; }
+  .boss-card .world-name, .boss-card .world-desc { color: #fff; }
+  .boss-card .world-desc { color: #94a3b8; }
+  .boss-card:hover { transform: translateY(-4px) scale(1.02); }
+
+  /* ── LESSON SCREEN ── */
+  #lesson {
+    background: #f8fafc; padding: 0;
+  }
+
+  .lesson-header {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; gap: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .back-btn {
+    background: #f1f5f9; border: none; border-radius: 12px;
+    padding: 8px 14px; cursor: pointer; font-size: 1.1rem;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: #e2e8f0; }
+
+  .lesson-title {
+    font-family: 'Fredoka One', cursive; font-size: 1.4rem;
+    color: var(--dark);
+  }
+
+  .lesson-body { padding: 20px; max-width: 520px; margin: 0 auto; width: 100%; }
+
+  /* Info card */
+  .info-card {
+    border-radius: 20px; padding: 24px; margin-bottom: 18px;
+    position: relative; overflow: hidden;
+    animation: slide-up 0.5s ease both;
+  }
+  @keyframes slide-up {
+    0%{opacity:0;transform:translateY(24px)}100%{opacity:1;transform:translateY(0)}
+  }
+  .info-card.mm { background: linear-gradient(135deg,#fdf2f8,#fce7f3); border: 2px solid #f9a8d4; }
+  .info-card.cm { background: linear-gradient(135deg,#fff7ed,#fed7aa); border: 2px solid #fdba74; }
+  .info-card.m  { background: linear-gradient(135deg,#eff6ff,#bfdbfe); border: 2px solid #93c5fd; }
+  .info-card.km { background: linear-gradient(135deg,#faf5ff,#e9d5ff); border: 2px solid #c4b5fd; }
+
+  .info-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+  .info-unit-name {
+    font-family: 'Fredoka One', cursive; font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  .info-card.mm .info-unit-name { color: var(--mm-color); }
+  .info-card.cm .info-unit-name { color: var(--cm-color); }
+  .info-card.m  .info-unit-name { color: var(--m-color); }
+  .info-card.km .info-unit-name { color: var(--km-color); }
+
+  .info-text { font-size: 1rem; color: #374151; line-height: 1.55; font-weight: 600; }
+  .info-examples {
+    margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .example-chip {
+    background: rgba(255,255,255,0.7); border-radius: 10px;
+    padding: 6px 12px; font-size: 0.85rem; font-weight: 700;
+    color: var(--dark);
+  }
+
+  /* Visual ruler */
+  .ruler-wrap { margin: 16px 0; }
+  .ruler-label { font-weight: 700; font-size: 0.9rem; color: #64748b; margin-bottom: 6px; }
+  .ruler {
+    height: 36px; background: #fef3c7;
+    border: 2px solid #f59e0b; border-radius: 8px;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center;
+  }
+  .ruler-fill {
+    height: 100%; border-radius: 6px 0 0 6px;
+    transition: width 1.5s ease;
+  }
+  .ruler-fill.mm { width: 2%; background: var(--mm-color); }
+  .ruler-fill.cm { width: 10%; background: var(--cm-color); }
+  .ruler-fill.m  { width: 100%; background: var(--m-color); }
+  .ruler-fill.km { width: 100%; background: var(--km-color); }
+  .ruler-text {
+    position: absolute; right: 10px;
+    font-family: 'Fredoka One', cursive; font-size: 0.9rem; color: var(--dark);
+  }
+
+  /* ── QUIZ SECTION ── */
+  .quiz-section { margin-top: 8px; }
+  .quiz-title {
+    font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+    color: var(--dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .q-card {
+    background: #fff; border-radius: 20px; padding: 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+    animation: slide-up 0.4s ease both;
+  }
+  .q-text {
+    font-size: 1.05rem; font-weight: 800; color: var(--dark);
+    margin-bottom: 14px; line-height: 1.4;
+  }
+  .q-visual {
+    font-size: 2rem; text-align: center; margin-bottom: 12px;
+  }
+
+  .options-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .opt-btn {
+    padding: 12px 8px; border: 2px solid #e2e8f0;
+    border-radius: 14px; background: #f8fafc;
+    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800;
+    color: var(--dark); cursor: pointer;
+    transition: all 0.2s; text-align: center;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--sky); background: #eff6ff; transform: scale(1.03); }
+  .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #166534; }
+  .opt-btn.wrong   { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+  .opt-btn:disabled { cursor: not-allowed; }
+
+  .feedback {
+    margin-top: 12px; padding: 12px 16px; border-radius: 14px;
+    font-weight: 700; font-size: 0.95rem; display: none;
+    animation: pop-in 0.3s ease;
+  }
+  @keyframes pop-in {
+    0%{opacity:0;transform:scale(0.8)}100%{opacity:1;transform:scale(1)}
+  }
+  .feedback.correct { background: #dcfce7; color: #166534; display: block; }
+  .feedback.wrong   { background: #fee2e2; color: #991b1b; display: block; }
+
+  .next-btn {
+    display: none; width: 100%; margin-top: 12px;
+    padding: 13px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+    color: #fff; font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(34,197,94,0.4);
+    transition: transform 0.2s;
+  }
+  .next-btn:hover { transform: scale(1.03); }
+  .next-btn.visible { display: block; }
+
+  /* progress bar */
+  .q-progress {
+    display: flex; gap: 6px; margin-bottom: 16px;
+  }
+  .q-pip {
+    height: 8px; flex: 1; border-radius: 999px;
+    background: #e2e8f0; transition: background 0.4s;
+  }
+  .q-pip.done { background: #22c55e; }
+  .q-pip.current { background: var(--sky); }
+
+  /* ── CONVERSION SCREEN ── */
+  #conversion {
+    background: linear-gradient(180deg,#0f172a 0%,#1e293b 100%);
+    padding: 0;
+  }
+
+  .conv-header {
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .conv-header .back-btn { background: rgba(255,255,255,0.1); color: #fff; }
+  .conv-title {
+    font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: #fff;
+  }
+
+  .conv-body { padding: 20px; max-width: 520px; margin: 0 auto; }
+
+  .conv-explainer {
+    background: rgba(255,255,255,0.06); border-radius: 20px;
+    padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .conv-explainer h3 {
+    font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: #f8fafc;
+    margin-bottom: 14px; text-align: center;
+  }
+
+  .staircase {
+    display: flex; flex-direction: column; gap: 4px;
+    align-items: center;
+  }
+  .stair {
+    border-radius: 10px; padding: 10px 20px;
+    text-align: center; font-family: 'Fredoka One', cursive;
+    font-size: 1rem; color: #fff; position: relative;
+    transition: transform 0.3s;
+  }
+  .stair:hover { transform: scale(1.05); }
+  .stair.km-s  { background: var(--km-color); width: 100%; }
+  .stair.m-s   { background: var(--m-color);  width: 78%; }
+  .stair.cm-s  { background: var(--cm-color); width: 56%; }
+  .stair.mm-s  { background: var(--mm-color); width: 34%; }
+  .stair-arrow { font-size: 1.3rem; color: #64748b; margin: 1px 0; text-align: center; }
+
+  .conv-game {
+    background: rgba(255,255,255,0.06); border-radius: 20px;
+    padding: 20px; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .conv-game h3 {
+    font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: #f8fafc;
+    margin-bottom: 16px; text-align: center;
+  }
+
+  .conv-q {
+    text-align: center; font-size: 1.4rem; font-weight: 800;
+    color: #fff; margin-bottom: 20px;
+    background: rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;
+  }
+  .conv-q span { color: var(--sun); font-family: 'Fredoka One', cursive; font-size: 1.8rem; }
+
+  .conv-options {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .conv-opt {
+    padding: 14px; border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px; background: rgba(255,255,255,0.06);
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    color: #fff; cursor: pointer; text-align: center;
+    transition: all 0.2s;
+  }
+  .conv-opt:hover:not(:disabled) { background: rgba(255,255,255,0.15); transform: scale(1.04); }
+  .conv-opt.correct { background: rgba(34,197,94,0.25); border-color: #22c55e; color: #86efac; }
+  .conv-opt.wrong   { background: rgba(239,68,68,0.2);  border-color: #ef4444; color: #fca5a5; }
+
+  .conv-feedback {
+    margin-top: 14px; padding: 12px; border-radius: 14px;
+    font-weight: 700; font-size: 0.95rem; text-align: center;
+    display: none;
+  }
+  .conv-feedback.show { display: block; }
+  .conv-feedback.ok { background: rgba(34,197,94,0.2); color: #86efac; }
+  .conv-feedback.no { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+  .conv-score {
+    text-align: center; margin-top: 14px;
+    font-family: 'Fredoka One', cursive; font-size: 1rem; color: #94a3b8;
+  }
+  .conv-score span { color: var(--sun); font-size: 1.3rem; }
+
+  /* ── CELEBRATION OVERLAY ── */
+  .celebration {
+    position: fixed; inset: 0; z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  }
+  .celebration.show { display: flex; }
+
+  .cel-box {
+    background: #fff; border-radius: 28px; padding: 36px 32px;
+    max-width: 320px; width: 90%; text-align: center;
+    animation: bounce-in 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes bounce-in {
+    0%{opacity:0;transform:scale(0.3)}100%{opacity:1;transform:scale(1)}
+  }
+  .cel-emoji { font-size: 4rem; margin-bottom: 10px; display: block; }
+  .cel-title {
+    font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--dark);
+    margin-bottom: 8px;
+  }
+  .cel-msg { font-size: 1rem; color: #64748b; font-weight: 700; margin-bottom: 20px; }
+  .cel-stars { font-size: 1.8rem; margin-bottom: 20px; }
+  .cel-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg,#f97316,#ec4899);
+    color: #fff; font-family: 'Fredoka One', cursive; font-size: 1.2rem;
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .cel-btn:hover { transform: scale(1.04); }
+
+  /* confetti bits */
+  .confetti-piece {
+    position: fixed; top: -10px; border-radius: 3px;
+    animation: confetti-fall linear forwards;
+    pointer-events: none; z-index: 101;
+  }
+  @keyframes confetti-fall {
+    0%{transform:translateY(0) rotate(0deg);opacity:1}
+    100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+  }
+
+  /* ── DRAG & DROP MATCHING ── */
+  .match-game { margin-bottom: 16px; }
+  .match-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .drag-item {
+    padding: 8px 14px; border-radius: 12px;
+    font-weight: 800; font-size: 0.9rem;
+    cursor: grab; border: 2px dashed #e2e8f0;
+    background: #f1f5f9; color: var(--dark);
+    user-select: none; transition: all 0.2s;
+  }
+  .drag-item:active { cursor: grabbing; transform: scale(1.1); }
+  .drag-item.dragging { opacity: 0.4; }
+
+  .drop-zone {
+    flex: 1; min-width: 140px; min-height: 44px;
+    border: 2px dashed #cbd5e1; border-radius: 12px;
+    padding: 8px 12px; display: flex; align-items: center;
+    gap: 8px; background: #f8fafc;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .drop-zone.over { border-color: var(--sky); background: #eff6ff; }
+  .drop-zone .label { font-size: 0.8rem; color: #94a3b8; font-weight: 700; }
+  .drop-zone .dropped {
+    padding: 4px 10px; border-radius: 8px; font-weight: 800;
+    font-size: 0.85rem; background: var(--sky); color: #fff;
+  }
+  .drop-zone.correct-zone { border-color: #22c55e; background: #f0fdf4; }
+  .drop-zone.wrong-zone   { border-color: #ef4444; background: #fef2f2; }
+
+  .check-match-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg,var(--sky),var(--purple));
+    color: #fff; font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .check-match-btn:hover { transform: scale(1.03); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 380px) {
+    .world-grid { grid-template-columns: 1fr 1fr; }
+    .game-title { font-size: 2.4rem; }
+    .options-grid { grid-template-columns: 1fr; }
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="bg-shapes">
+  <div class="shape"></div><div class="shape"></div>
+  <div class="shape"></div><div class="shape"></div><div class="shape"></div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="home" class="screen active">
+  <div class="logo-wrap">
+    <span class="hero-mascot">🦸</span>
+    <div class="game-title">Measurement<br><span>Quest!</span></div>
+    <div class="tagline">Your ruler adventure awaits, Year 4! 🗺️</div>
+    <div class="unit-pills">
+      <div class="pill mm">mm</div>
+      <div class="pill cm">cm</div>
+      <div class="pill m">m</div>
+      <div class="pill km">km</div>
+    </div>
+    <button class="start-btn" onclick="showMap()">Let's Play! 🚀</button>
+  </div>
+</div>
+
+<!-- ══════════ MAP ══════════ -->
+<div id="map" class="screen">
+  <div class="map-header">
+    <h2>🗺️ Quest Map</h2>
+    <p>Complete each world to unlock the next!</p>
+    <div class="stars-display">⭐ <span id="total-stars">0</span> / 15 Stars</div>
+  </div>
+
+  <div class="world-grid">
+    <div class="world-card mm" onclick="startLesson('mm')">
+      <span class="world-emoji">🐜</span>
+      <div class="world-name">Tiny Town</div>
+      <div class="world-desc">Millimetres (mm)</div>
+      <div class="world-stars" id="stars-mm">☆☆☆</div>
+    </div>
+
+    <div class="world-card cm" onclick="startLesson('cm')">
+      <span class="world-emoji">✏️</span>
+      <div class="world-name">Pencil Peak</div>
+      <div class="world-desc">Centimetres (cm)</div>
+      <div class="world-stars" id="stars-cm">☆☆☆</div>
+    </div>
+
+    <div class="world-card m" onclick="startLesson('m')">
+      <span class="world-emoji">🏊</span>
+      <div class="world-name">Metre Marsh</div>
+      <div class="world-desc">Metres (m)</div>
+      <div class="world-stars" id="stars-m">☆☆☆</div>
+    </div>
+
+    <div class="world-card km" onclick="startLesson('km')">
+      <span class="world-emoji">🚗</span>
+      <div class="world-name">Kilo Kingdom</div>
+      <div class="world-desc">Kilometres (km)</div>
+      <div class="world-stars" id="stars-km">☆☆☆</div>
+    </div>
+
+    <div class="world-card boss-card" onclick="showConversion()">
+      <span class="world-emoji">⚡</span>
+      <div class="world-name">Conversion Castle</div>
+      <div class="world-desc">Convert between ALL units!</div>
+      <div class="world-stars" id="stars-conv">☆☆☆</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LESSON ══════════ -->
+<div id="lesson" class="screen">
+  <div class="lesson-header">
+    <button class="back-btn" onclick="showMap()">← Map</button>
+    <div class="lesson-title" id="lesson-title">Tiny Town</div>
+  </div>
+  <div class="lesson-body" id="lesson-body"></div>
+</div>
+
+<!-- ══════════ CONVERSION ══════════ -->
+<div id="conversion" class="screen">
+  <div class="conv-header">
+    <button class="back-btn" onclick="showMap()">← Map</button>
+    <div class="conv-title">⚡ Conversion Castle</div>
+  </div>
+  <div class="conv-body" id="conv-body"></div>
+</div>
+
+<!-- ══════════ CELEBRATION ══════════ -->
+<div class="celebration" id="celebration">
+  <div class="cel-box">
+    <span class="cel-emoji" id="cel-emoji">🎉</span>
+    <div class="cel-title" id="cel-title">Amazing!</div>
+    <div class="cel-msg" id="cel-msg">You're a measurement hero!</div>
+    <div class="cel-stars" id="cel-stars">⭐⭐⭐</div>
+    <button class="cel-btn" onclick="closeCelebration()">Back to Map 🗺️</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const LESSONS = {
+  mm: {
+    name: 'Tiny Town',
+    emoji: '🐜',
+    cls: 'mm',
+    icon: '🔬',
+    unit: 'Millimetre (mm)',
+    short: 'mm',
+    color: '#ec4899',
+    info: 'A millimetre is SUPER tiny — about the size of a grain of sand or the thickness of a coin! You need 10 mm to make 1 centimetre.',
+    examples: ['🐜 Ant length', '💊 Tablet thickness', '🪙 Coin thickness', '✏️ Pencil tip'],
+    ruler: 'mm',
+    rulerLabel: '1 mm is this tiny tiny bit →',
+    questions: [
+      { q: 'Mia measures her fingernail. It is about 8 __?', visual: '💅', opts: ['8 km', '8 m', '8 mm', '8 cm'], ans: 2, explain: 'Fingernails are just a few millimetres wide!' },
+      { q: 'How many mm make 1 cm?', visual: '📏', opts: ['100', '10', '1000', '5'], ans: 1, explain: '10 mm = 1 cm. Think of 10 tiny steps making one big step!' },
+      { q: 'A coin is 2 mm thick. Zara stacks 5 coins. How thick is the stack?', visual: '🪙🪙🪙🪙🪙', opts: ['7 mm', '10 mm', '5 mm', '25 mm'], ans: 1, explain: '2 mm × 5 = 10 mm. Great multiplication!' },
+    ],
+    drag: {
+      title: 'Match the object to its size!',
+      items: [
+        { id:'a', label:'🐜 Ant length', answer:'b' },
+        { id:'b', label:'💊 Tablet', answer:'a' },
+      ],
+      zones: [
+        { id:'a', label:'About 1 mm thick', accepts:'b' },
+        { id:'b', label:'About 2 mm long', accepts:'a' },
+      ]
+    }
+  },
+
+  cm: {
+    name: 'Pencil Peak',
+    emoji: '✏️',
+    cls: 'cm',
+    icon: '📏',
+    unit: 'Centimetre (cm)',
+    short: 'cm',
+    color: '#f97316',
+    info: 'A centimetre is about the width of your pinky finger! Rulers are 30 cm long. 10 cm make a decimetre, and 100 cm make 1 metre!',
+    examples: ['✏️ Pencil length', '📱 Phone width', '🧴 Bottle cap', '🖊️ Width of your palm'],
+    ruler: 'cm',
+    rulerLabel: '1 cm ≈ width of your pinky finger',
+    questions: [
+      { q: 'Leon\'s pencil is 15 cm long. His rubber is 3 cm. What is the total length?', visual: '✏️🔶', opts: ['12 cm', '18 cm', '15 cm', '20 cm'], ans: 1, explain: '15 + 3 = 18 cm. Brilliant adding!' },
+      { q: 'How many cm are in 1 metre?', visual: '📏', opts: ['10 cm', '1000 cm', '100 cm', '50 cm'], ans: 2, explain: '100 cm = 1 m. That\'s like 100 pinky fingers in a row!' },
+      { q: 'A book is 24 cm tall. A pen is 14 cm tall. How much taller is the book?', visual: '📚🖊️', opts: ['38 cm', '10 cm', '14 cm', '8 cm'], ans: 1, explain: '24 − 14 = 10 cm. Super subtraction!' },
+    ],
+    drag: {
+      title: 'Match each item to its length!',
+      items: [
+        { id:'a', label:'✏️ Pencil', answer:'a' },
+        { id:'b', label:'🖐️ Hand span', answer:'b' },
+      ],
+      zones: [
+        { id:'a', label:'About 17 cm', accepts:'a' },
+        { id:'b', label:'About 20 cm', accepts:'b' },
+      ]
+    }
+  },
+
+  m: {
+    name: 'Metre Marsh',
+    emoji: '🏊',
+    cls: 'm',
+    icon: '🏗️',
+    unit: 'Metre (m)',
+    short: 'm',
+    color: '#0ea5e9',
+    info: 'A metre is about the height of a door handle from the floor, or a big stride! Swimming pools are often 25 metres or 50 metres long.',
+    examples: ['🏊 Swimming pool', '🚪 Door height', '🧍 Adult height', '🛏️ Bed length'],
+    ruler: 'm',
+    rulerLabel: '1 m = 100 cm (like a full ruler × 3⅓)',
+    questions: [
+      { q: 'A swimming pool is 25 m long. Priya swims 2 lengths. How far does she swim?', visual: '🏊‍♀️', opts: ['25 m', '27 m', '50 m', '30 m'], ans: 2, explain: '25 × 2 = 50 m. She\'s a swimming star!' },
+      { q: 'How many cm are in 3 metres?', visual: '📐', opts: ['30 cm', '300 cm', '3000 cm', '100 cm'], ans: 1, explain: '3 × 100 = 300 cm. You remembered 100 cm = 1 m!' },
+      { q: 'A fence is 8 m long. The farmer adds 250 cm more. How many metres in total?', visual: '🌿', opts: ['10.5 m', '10 m', '11 m', '8.25 m'], ans: 0, explain: '250 cm = 2.5 m, so 8 + 2.5 = 10.5 m. Amazing!' },
+    ],
+    drag: {
+      title: 'Put these in order, smallest to biggest!',
+      items: [
+        { id:'a', label:'🏠 Room width 5 m', answer:'b' },
+        { id:'b', label:'🚪 Door 2 m', answer:'a' },
+      ],
+      zones: [
+        { id:'a', label:'Smaller', accepts:'b' },
+        { id:'b', label:'Bigger', accepts:'a' },
+      ]
+    }
+  },
+
+  km: {
+    name: 'Kilo Kingdom',
+    emoji: '🚗',
+    cls: 'km',
+    icon: '🗺️',
+    unit: 'Kilometre (km)',
+    short: 'km',
+    color: '#a855f7',
+    info: 'A kilometre is 1,000 metres! That\'s about a 10–12 minute walk. The distance from one town to another is usually measured in kilometres.',
+    examples: ['🚗 Car journeys', '🏃 Running races (5 km)', '🌍 City to city', '✈️ Between countries'],
+    ruler: 'km',
+    rulerLabel: '1 km = 1,000 m = 100,000 cm!',
+    questions: [
+      { q: 'James drives 3 km to school every day. How far does he drive in 5 days?', visual: '🚗🏫', opts: ['8 km', '15 km', '35 km', '20 km'], ans: 1, explain: '3 × 5 = 15 km. Brilliant!' },
+      { q: 'How many metres in 2 km?', visual: '📍', opts: ['200 m', '20 m', '2000 m', '20000 m'], ans: 2, explain: '2 × 1000 = 2000 m. You know 1 km = 1000 m!' },
+      { q: 'A marathon is 42 km. Olu runs the first 18 km. How many km remain?', visual: '🏃‍♂️', opts: ['60 km', '24 km', '26 km', '20 km'], ans: 1, explain: '42 − 18 = 24 km. Super maths hero!' },
+    ],
+    drag: {
+      title: 'Match the journey to its km!',
+      items: [
+        { id:'a', label:'🚶 Walk to school', answer:'a' },
+        { id:'b', label:'✈️ London → Paris', answer:'b' },
+      ],
+      zones: [
+        { id:'a', label:'About 1–2 km', accepts:'a' },
+        { id:'b', label:'About 450 km', accepts:'b' },
+      ]
+    }
+  }
+};
+
+const CONV_QUESTIONS = [
+  { q: '1 cm = ? mm', ans: 10,   opts: [5, 10, 100, 1000], explain: '10 mm = 1 cm. Think 10 tiny steps!' },
+  { q: '1 m = ? cm', ans: 100,  opts: [10, 100, 1000, 50],  explain: '100 cm = 1 m. Like 100 pinky fingers!' },
+  { q: '1 km = ? m', ans: 1000, opts: [100, 10, 1000, 500], explain: '1000 m = 1 km. Kilo means 1000!' },
+  { q: '30 mm = ? cm', ans: 3,   opts: [3, 30, 300, 0.3],   explain: '30 ÷ 10 = 3 cm. Divide by 10!' },
+  { q: '500 cm = ? m', ans: 5,   opts: [50, 5, 0.5, 500],   explain: '500 ÷ 100 = 5 m. Divide by 100!' },
+  { q: '3000 m = ? km', ans: 3,  opts: [300, 30, 3, 0.3],   explain: '3000 ÷ 1000 = 3 km. Divide by 1000!' },
+  { q: '2 m = ? cm', ans: 200,  opts: [20, 200, 2000, 2],   explain: '2 × 100 = 200 cm. Multiply by 100!' },
+  { q: '4 km = ? m', ans: 4000, opts: [400, 4000, 40, 40000], explain: '4 × 1000 = 4000 m. Multiply by 1000!' },
+  { q: '50 mm = ? cm', ans: 5,  opts: [5, 50, 0.5, 500],    explain: '50 ÷ 10 = 5 cm. Divide by 10!' },
+  { q: '7 cm = ? mm', ans: 70,  opts: [7, 700, 70, 0.7],    explain: '7 × 10 = 70 mm. Multiply by 10!' },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+const state = {
+  stars: { mm:0, cm:0, m:0, km:0, conv:0 },
+  currentLesson: null,
+  qIdx: 0, qCorrect: 0,
+  convIdx: 0, convScore: 0,
+};
+
+function totalStars() {
+  return Object.values(state.stars).reduce((a,b)=>a+b,0);
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showMap() {
+  updateMapStars();
+  showScreen('map');
+}
+
+function updateMapStars() {
+  document.getElementById('total-stars').textContent = totalStars();
+  ['mm','cm','m','km','conv'].forEach(k => {
+    const el = document.getElementById('stars-'+k);
+    if (!el) return;
+    const s = state.stars[k] || 0;
+    el.textContent = '⭐'.repeat(s) + '☆'.repeat(3-s);
+  });
+}
+
+// ── LESSON ────────────────────────────────────────────────────────────────────
+
+function startLesson(unit) {
+  state.currentLesson = unit;
+  state.qIdx = 0;
+  state.qCorrect = 0;
+  const d = LESSONS[unit];
+  document.getElementById('lesson-title').textContent = d.emoji + ' ' + d.name;
+  document.getElementById('lesson-body').innerHTML = buildLesson(d);
+  showScreen('lesson');
+  // animate ruler
+  setTimeout(() => {
+    const fill = document.querySelector('.ruler-fill');
+    if (fill) fill.style.width = fill.classList.contains('mm') ? '2%'
+      : fill.classList.contains('cm') ? '10%' : '100%';
+  }, 300);
+}
+
+function buildLesson(d) {
+  const q = d.questions[0];
+  return `
+  <div class="info-card ${d.cls}">
+    <span class="info-icon">${d.icon}</span>
+    <div class="info-unit-name">${d.unit}</div>
+    <div class="info-text">${d.info}</div>
+    <div class="info-examples">
+      ${d.examples.map(e=>`<div class="example-chip">${e}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="ruler-wrap">
+    <div class="ruler-label">${d.rulerLabel}</div>
+    <div class="ruler">
+      <div class="ruler-fill ${d.cls}" style="width:0%"></div>
+      <div class="ruler-text">${d.short}</div>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quiz Time! Test yourself:</div>
+    <div class="q-progress">${d.questions.map((_,i)=>`<div class="q-pip ${i===0?'current':''}" id="pip-${i}"></div>`).join('')}</div>
+    <div id="q-container"></div>
+  </div>`;
+}
+
+function renderQuestion() {
+  const d = LESSONS[state.currentLesson];
+  const q = d.questions[state.qIdx];
+  const shuffled = q.opts.map((o,i)=>({o,i}));
+
+  // update pip
+  d.questions.forEach((_,i) => {
+    const pip = document.getElementById('pip-'+i);
+    if (!pip) return;
+    pip.className = 'q-pip' + (i<state.qIdx?' done':i===state.qIdx?' current':'');
+  });
+
+  document.getElementById('q-container').innerHTML = `
+    <div class="q-card" id="q-card">
+      <div class="q-visual">${q.visual}</div>
+      <div class="q-text">Q${state.qIdx+1}. ${q.q}</div>
+      <div class="options-grid">
+        ${q.opts.map((o,i)=>`
+          <button class="opt-btn" id="opt-${i}" onclick="pickAnswer(${i})">${o}</button>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">
+        ${state.qIdx < d.questions.length-1 ? 'Next Question →' : 'See My Results! 🎉'}
+      </button>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initial render hook
+  const lessonEl = document.getElementById('lesson-body');
+  const observer = new MutationObserver(() => {
+    if (document.getElementById('q-container')) {
+      renderQuestion();
+    }
+  });
+  observer.observe(lessonEl, { childList: true });
+});
+
+function pickAnswer(idx) {
+  const d = LESSONS[state.currentLesson];
+  const q = d.questions[state.qIdx];
+  const correct = idx === q.ans;
+  if (correct) state.qCorrect++;
+
+  document.querySelectorAll('.opt-btn').forEach((b,i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx && !correct) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = correct
+    ? '✅ ' + ['Spot on!','Brilliant!','You got it!','Superstar!'][Math.floor(Math.random()*4)] + ' ' + q.explain
+    : '❌ Not quite. ' + q.explain;
+
+  document.getElementById('next-btn').classList.add('visible');
+}
+
+function nextQ() {
+  const d = LESSONS[state.currentLesson];
+  state.qIdx++;
+  if (state.qIdx < d.questions.length) {
+    renderQuestion();
+  } else {
+    // done!
+    const pct = state.qCorrect / d.questions.length;
+    const earned = pct === 1 ? 3 : pct >= 0.6 ? 2 : 1;
+    state.stars[state.currentLesson] = Math.max(state.stars[state.currentLesson], earned);
+    showCelebration(earned, d, state.qCorrect, d.questions.length);
+  }
+}
+
+// ── CELEBRATION ───────────────────────────────────────────────────────────────
+
+function showCelebration(stars, d, correct, total) {
+  const msgs = [
+    ['Keep practising, you\'ve got this! 💪', '🤔'],
+    ['Great effort! You\'re getting there! 🙌', '😊'],
+    ['PERFECT SCORE! You\'re a legend! 🏆', '🥳'],
+  ];
+  const [msg, emoji] = msgs[stars-1];
+  document.getElementById('cel-emoji').textContent = emoji;
+  document.getElementById('cel-title').textContent = stars===3?'Perfect!':stars===2?'Well Done!':'Good Try!';
+  document.getElementById('cel-msg').textContent = `${correct}/${total} correct. ${msg}`;
+  document.getElementById('cel-stars').textContent = '⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('celebration').classList.add('show');
+  launchConfetti(stars);
+}
+
+function closeCelebration() {
+  document.getElementById('celebration').classList.remove('show');
+  showMap();
+}
+
+function launchConfetti(count) {
+  const colors = ['#f97316','#ec4899','#22c55e','#0ea5e9','#a855f7','#fbbf24'];
+  const n = count * 20;
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      width:${6+Math.random()*8}px;
+      height:${10+Math.random()*12}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${2+Math.random()*2}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 4000);
+  }
+}
+
+// ── CONVERSION ────────────────────────────────────────────────────────────────
+
+function showConversion() {
+  state.convIdx = 0; state.convScore = 0;
+  document.getElementById('conv-body').innerHTML = buildConvScreen();
+  showScreen('conversion');
+}
+
+function buildConvScreen() {
+  return `
+  <div class="conv-explainer">
+    <h3>🔑 The Golden Rules</h3>
+    <div class="staircase">
+      <div class="stair km-s">🚗 km (kilometres)</div>
+      <div class="stair-arrow">⬆️ × 1000 &nbsp;&nbsp; ÷ 1000 ⬇️</div>
+      <div class="stair m-s">🏊 m (metres)</div>
+      <div class="stair-arrow">⬆️ × 100 &nbsp;&nbsp; ÷ 100 ⬇️</div>
+      <div class="stair cm-s">✏️ cm (centimetres)</div>
+      <div class="stair-arrow">⬆️ × 10 &nbsp;&nbsp; ÷ 10 ⬇️</div>
+      <div class="stair mm-s">🐜 mm (millimetres)</div>
+    </div>
+    <p style="color:#94a3b8;font-size:0.8rem;text-align:center;margin-top:12px;font-weight:700">Going UP → multiply! &nbsp;|&nbsp; Going DOWN → divide!</p>
+  </div>
+
+  <div class="conv-game">
+    <h3>⚡ Conversion Challenge — 10 Questions!</h3>
+    <div id="conv-q-wrap"></div>
+  </div>`;
+}
+
+function renderConvQ() {
+  const q = CONV_QUESTIONS[state.convIdx];
+  document.getElementById('conv-q-wrap').innerHTML = `
+    <div class="conv-q">
+      Convert: <span>${q.q}</span>
+    </div>
+    <div class="conv-options">
+      ${q.opts.map(o=>`<button class="conv-opt" onclick="pickConv(${o},this)">${o}</button>`).join('')}
+    </div>
+    <div class="conv-feedback" id="conv-fb"></div>
+    <div class="conv-score">Score: <span>${state.convScore}</span> / ${state.convIdx}</div>
+    <button class="next-btn visible" id="conv-next" onclick="nextConv()" style="display:none;background:linear-gradient(135deg,#a855f7,#ec4899);margin-top:12px">
+      ${state.convIdx < CONV_QUESTIONS.length-1 ? 'Next →' : 'Finish! 🎉'}
+    </button>`;
+}
+
+function pickConv(val, btn) {
+  const q = CONV_QUESTIONS[state.convIdx];
+  const correct = val === q.ans;
+  if (correct) state.convScore++;
+  document.querySelectorAll('.conv-opt').forEach(b => {
+    b.disabled = true;
+    if (Number(b.textContent) === q.ans) b.classList.add('correct');
+    else if (b === btn && !correct) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('conv-fb');
+  fb.className = 'conv-feedback show ' + (correct?'ok':'no');
+  fb.textContent = correct ? '✅ Yes! ' + q.explain : '❌ Not this time. ' + q.explain;
+  document.getElementById('conv-next').style.display = 'block';
+}
+
+function nextConv() {
+  state.convIdx++;
+  if (state.convIdx < CONV_QUESTIONS.length) {
+    renderConvQ();
+  } else {
+    const pct = state.convScore / CONV_QUESTIONS.length;
+    const earned = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : 1;
+    state.stars.conv = Math.max(state.stars.conv, earned);
+    document.getElementById('conv-body').innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:4rem;margin-bottom:16px">
+          ${pct===1?'🏆':pct>=0.6?'🎉':'💪'}
+        </div>
+        <div style="font-family:'Fredoka One',cursive;font-size:2rem;color:#f8fafc;margin-bottom:8px">
+          ${pct>=0.9?'Conversion Master!':pct>=0.6?'Great Work!':'Keep Going!'}
+        </div>
+        <div style="color:#94a3b8;font-weight:700;font-size:1.1rem;margin-bottom:20px">
+          ${state.convScore} / ${CONV_QUESTIONS.length} correct
+        </div>
+        <div style="font-size:2rem;margin-bottom:28px">${'⭐'.repeat(earned)+'☆'.repeat(3-earned)}</div>
+        <button onclick="showConversion()" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;margin-right:8px">Try Again 🔄</button>
+        <button onclick="showMap()" style="background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.2);border-radius:14px;padding:14px 32px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer">Map 🗺️</button>
+      </div>`;
+    launchConfetti(earned);
+  }
+}
+
+// ── BOOT: render first conv question when conv screen activates ───────────────
+const convObserver = new MutationObserver(() => {
+  if (document.getElementById('conv-q-wrap') && !document.querySelector('.conv-opt')) {
+    renderConvQ();
+  }
+});
+convObserver.observe(document.getElementById('conv-body'), { childList: true });
+
+// ── kick off map stars on load ───────────────────────────────────────────────
+window.addEventListener('load', updateMapStars);
+</script>
+</body>
+</html>
